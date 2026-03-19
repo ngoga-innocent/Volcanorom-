@@ -3,280 +3,273 @@ import { Link } from "react-router-dom";
 import {
   useGetSoftwaresQuery,
   useDeleteSoftwareMutation,
+  useUpdateSoftwareMutation,
 } from "../../features/softwareApi";
-import { FiTrash2, FiEye, FiPlus, FiSearch } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 const PAGE_SIZE = 5;
 
 const SoftwareManager = () => {
-  const { data: softwares = [], isLoading, isError, refetch } =
-    useGetSoftwaresQuery({});
-
+  const { data: softwares = [], isLoading, refetch } = useGetSoftwaresQuery({});
   const [deleteSoftware] = useDeleteSoftwareMutation();
+  const [updateSoftware, { isLoading: updating }] = useUpdateSoftwareMutation();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-  const filteredSoftwares = softwares.filter((s: any) =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const [editing, setEditing] = useState<any>(null);
+  const [form, setForm] = useState<any>({});
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+
+  const filtered = softwares.filter((s: any) =>
+    s.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const totalPages = Math.ceil(filteredSoftwares.length / PAGE_SIZE);
+  const pages = Math.ceil(filtered.length / PAGE_SIZE);
 
-  const paginatedSoftwares = filteredSoftwares.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
+  const items = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const toggleSelect = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+  const handleDelete = async (id: number) => {
+    if (!confirm("Delete this software?")) return;
+
+    await deleteSoftware(id).unwrap();
+    refetch();
   };
 
-  const toggleSelectAll = () => {
-    if (selectedIds.length === paginatedSoftwares.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(paginatedSoftwares.map((s: any) => s.id));
-    }
+  const openEdit = (software: any) => {
+    setEditing(software);
+    setForm({
+      name: software.name,
+      description: software.description,
+      price_in_credits: software.price_in_credits,
+      type: software.type,
+    });
   };
 
-  const handleBulkDelete = async () => {
-    if (!selectedIds.length) return;
+  const closeModal = () => {
+    setEditing(null);
+    setThumbnail(null);
+  };
 
-    if (!confirm("Delete selected softwares?")) return;
+  const handleUpdate = async (e: any) => {
+    e.preventDefault();
 
     try {
-      for (const id of selectedIds) {
-        await deleteSoftware(id).unwrap();
+      const data = new FormData();
+
+      data.append("name", form.name);
+      data.append("description", form.description);
+      data.append("price_in_credits", form.price_in_credits);
+      data.append("type", form.type);
+
+      if (thumbnail) {
+        data.append("thumbnail", thumbnail);
       }
 
-      setSelectedIds([]);
+      await updateSoftware({
+        id: editing.id,
+        data,
+      }).unwrap();
+      toast.success("Successfully updated the Tools");
+      closeModal();
       refetch();
-    } catch {
-      alert("Failed to delete some softwares");
+    } catch (error) {
+      toast.error("Failed to update the tool, Try again Later!!!")
     }
   };
 
   return (
-    <div className="w-full text-gray-900 space-y-6">
-
+    <div className="space-y-6 text-gray-800">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-        <h1 className="text-2xl md:text-3xl font-bold">
-          Software Management
-        </h1>
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <h1 className="text-2xl font-bold">Software Management</h1>
 
         <Link
           to="/admin/upload-software"
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-4 py-2 rounded w-fit"
         >
-          <FiPlus /> Upload Software
+          Upload
         </Link>
-
       </div>
 
-      {/* CONTROLS */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      {/* SEARCH */}
 
-        <div className="relative w-full md:w-80">
-          <FiSearch className="absolute left-3 top-3 text-gray-400" />
+      <input
+        type="text"
+        placeholder="Search software..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="border p-2 rounded w-full md:w-80"
+      />
 
-          <input
-            type="text"
-            placeholder="Search software..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
+      {/* TABLE */}
 
-        {selectedIds.length > 0 && (
-          <button
-            onClick={handleBulkDelete}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-          >
-            Delete Selected ({selectedIds.length})
-          </button>
-        )}
+      <div className="bg-white rounded shadow overflow-x-auto">
+        {isLoading && <p className="p-6">Loading...</p>}
 
-      </div>
-
-      {/* TABLE CARD */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-
-        {isLoading && (
-          <p className="p-6 text-gray-500">Loading softwares...</p>
-        )}
-
-        {isError && (
-          <p className="p-6 text-red-500">Failed to load softwares</p>
-        )}
-
-        {!isLoading && paginatedSoftwares.length === 0 && (
-          <p className="p-6 text-gray-500">
-            No software uploaded yet
-          </p>
-        )}
-
-        {paginatedSoftwares.length > 0 && (
+        {!isLoading && (
           <table className="w-full text-sm">
-
-            <thead className="bg-gray-50 border-b">
-              <tr className="text-gray-600">
-
-                <th className="p-3">
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedIds.length ===
-                      paginatedSoftwares.length
-                    }
-                    onChange={toggleSelectAll}
-                  />
-                </th>
-
+            <thead className="bg-gray-100">
+              <tr>
                 <th className="p-3 text-left">Thumbnail</th>
                 <th className="p-3 text-left">Name</th>
-                <th className="p-3 text-left">Credits</th>
-                <th className="p-3 text-left">Status</th>
+                <th className="p-3 text-left">Price</th>
+                <th className="p-3 text-left">Type</th>
                 <th className="p-3 text-left">Created</th>
                 <th className="p-3 text-center">Actions</th>
-
               </tr>
             </thead>
 
             <tbody>
-
-              {paginatedSoftwares.map((software: any) => (
-
-                <tr
-                  key={software.id}
-                  className="border-b hover:bg-gray-50"
-                >
-
-                  <td className="p-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(software.id)}
-                      onChange={() =>
-                        toggleSelect(software.id)
-                      }
-                    />
-                  </td>
-
+              {items.map((s: any) => (
+                <tr key={s.id} className="border-b">
                   <td className="p-3">
                     <img
-                      src={
-                        software.thumbnail ||
-                        "/placeholder.png"
-                      }
-                      className="w-14 h-14 rounded object-cover border"
+                      src={s.thumbnail}
+                      className="w-12 h-12 rounded object-cover"
                     />
                   </td>
 
-                  <td className="p-3 font-medium">
-                    {software.name}
-                  </td>
+                  <td className="p-3">{s.name}</td>
+
+                  <td className="p-3">{s.price_in_credits} credits</td>
+
+                  <td className="p-3 capitalize">{s.type}</td>
 
                   <td className="p-3">
-                    {software.price_in_credits} credits
+                    {new Date(s.created_at).toLocaleDateString()}
                   </td>
 
-                  <td className="p-3">
-
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        software.is_featured
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {software.is_featured
-                        ? "Featured"
-                        : "Regular"}
-                    </span>
-
-                  </td>
-
-                  <td className="p-3">
-                    {new Date(
-                      software.created_at
-                    ).toLocaleDateString()}
-                  </td>
-
-                  <td className="p-3 flex justify-center gap-2">
-
-                    <Link
-                      to={`/admin/software/${software.id}`}
-                      className="p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                    >
-                      <FiEye />
-                    </Link>
-
+                  <td className="p-3 flex gap-2 justify-center">
                     <button
-                      className="p-2 bg-red-500 text-white rounded hover:bg-red-600"
-                      onClick={async () => {
-                        if (
-                          confirm(
-                            "Delete this software?"
-                          )
-                        ) {
-                          await deleteSoftware(
-                            software.id
-                          ).unwrap();
-                          refetch();
-                        }
-                      }}
+                      onClick={() => openEdit(s)}
+                      className="bg-green-500 text-white px-3 py-1 rounded"
                     >
-                      <FiTrash2 />
+                      Edit
                     </button>
 
+                    <button
+                      onClick={() => handleDelete(s.id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
                   </td>
-
                 </tr>
-
               ))}
-
             </tbody>
-
           </table>
         )}
-
       </div>
 
       {/* PAGINATION */}
 
-      {totalPages > 1 && (
-
-        <div className="flex justify-center gap-2">
-
-          {Array.from(
-            { length: totalPages },
-            (_, i) => i + 1
-          ).map((page) => (
-
+      {pages > 1 && (
+        <div className="flex gap-2 justify-center">
+          {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
             <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
+              key={p}
+              onClick={() => setPage(p)}
               className={`px-3 py-1 rounded ${
-                page === currentPage
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
+                p === page ? "bg-blue-600 text-white" : "bg-gray-200"
               }`}
             >
-              {page}
+              {p}
             </button>
-
           ))}
-
         </div>
-
       )}
 
+      {/* EDIT MODAL */}
+
+      {editing && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg w-full max-w-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Edit Software</h2>
+
+            <form onSubmit={handleUpdate} className="space-y-4">
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="border p-2 rounded w-full"
+                placeholder="Software name"
+              />
+
+              <textarea
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                className="border p-2 rounded w-full"
+                placeholder="Description"
+              />
+
+              <input
+                type="number"
+                value={form.price_in_credits}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    price_in_credits: e.target.value,
+                  })
+                }
+                className="border p-2 rounded w-full"
+                placeholder="Price"
+              />
+
+              <select
+                value={form.type}
+                onChange={(e) => setForm({ ...form, type: e.target.value })}
+                className="border p-2 rounded w-full"
+              >
+                <option value="tools">Tools</option>
+                <option value="mdm files">MDM Files</option>
+              </select>
+
+              {/* CURRENT THUMBNAIL */}
+              {editing.thumbnail && (
+                <div>
+                  <p className="text-sm mb-1">Current Thumbnail</p>
+                  <img
+                    src={editing.thumbnail}
+                    className="w-24 h-24 object-cover rounded-lg border"
+                  />
+                </div>
+              )}
+
+              {/* NEW THUMBNAIL */}
+              <div>
+                <p className="text-sm mb-1">Change Thumbnail (optional)</p>
+                <input
+                  type="file"
+                  onChange={(e) => setThumbnail(e.target.files?.[0] || null)}
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-gray-300 rounded"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                >
+                  {updating ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

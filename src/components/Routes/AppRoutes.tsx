@@ -26,6 +26,9 @@ import Terms from "../../pages/ClientPages/FooterPages/Term";
 import Refund from "../../pages/ClientPages/FooterPages/Refund";
 import HelpCenter from "../../pages/ClientPages/FooterPages/HelpCenter";
 import PaymentResult from "../../pages/CommonPages/PaymentResult";
+import MyOrders from "../../pages/ClientPages/Myorders";
+import AdminOrders from "../../pages/AdminPages/Orders";
+import HeroAdmin from "../../pages/AdminPages/HeroPage";
 
 const AppRoutes = () => {
   return (
@@ -39,6 +42,8 @@ const AppRoutes = () => {
         <Route path="/payment-result" element={<PaymentResult />} />
         
         <Route path="/contact" element={<Contact />} />
+        
+        <Route path="/my-orders" element={<MyOrders />} />
 
         <Route path="/help" element={<HelpCenter />} />
         <Route path="/terms" element={<Terms />} />
@@ -68,10 +73,12 @@ const AppRoutes = () => {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="Hero" element={<HeroAdmin />} />
           <Route path="transactions" element={<AdminTransactions />} />
           <Route path="softwares" element={<SoftwareManager />} />
           <Route path="upload-software" element={<UploadSoftware />} />
           <Route path="chats" element={<AdminChatsPage />} />
+          <Route path="orders" element={<AdminOrders />} />
         </Route>
       </Route>
     </Routes>

@@ -25,6 +25,17 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.input {
+  @apply w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700;
+}
+
+.btn-secondary {
+  @apply border px-4 py-2 rounded-lg hover:bg-gray-100;
+}
 /* 
 
 

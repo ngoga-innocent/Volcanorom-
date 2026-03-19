@@ -2,24 +2,27 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithAuth } from "./baseQueryWitjauth";
 
 export const softwareApi = createApi({
+
   reducerPath: "softwareApi",
+
   baseQuery: baseQueryWithAuth,
+
   tagTypes: ["Software"],
 
   endpoints: (builder) => ({
 
     getSoftwares: builder.query({
-      query: () => "software/",
+      query: () => "softwares/softs/",
       providesTags: ["Software"],
     }),
 
     getSoftware: builder.query({
-      query: (id) => `software/${id}/`,
+      query: (id) => `softwares/softs/${id}/`,
     }),
 
     createSoftware: builder.mutation({
       query: (data) => ({
-        url: "software/",
+        url: "softwares/softs/",
         method: "POST",
         body: data,
       }),
@@ -28,8 +31,8 @@ export const softwareApi = createApi({
 
     updateSoftware: builder.mutation({
       query: ({ id, data }) => ({
-        url: `software/${id}/`,
-        method: "PUT",
+        url: `softwares/softs/${id}/`,
+        method: "PATCH",
         body: data,
       }),
       invalidatesTags: ["Software"],
@@ -37,11 +40,12 @@ export const softwareApi = createApi({
 
     deleteSoftware: builder.mutation({
       query: (id) => ({
-        url: `software/${id}/`,
+        url: `softwares/softs/${id}/`,
         method: "DELETE",
       }),
       invalidatesTags: ["Software"],
     }),
+
   }),
 });
 

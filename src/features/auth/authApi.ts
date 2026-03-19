@@ -4,6 +4,7 @@ import type {
     LoginRequest,
     LoginResponse,
     RegisterRequest,
+    Transaction,
     UserProfile
 } from "./types";
 import url from "../../url";
@@ -69,6 +70,10 @@ export const authApi = createApi({
                 body: data,
             }),
         }),
+        getMyTransactions: builder.query<Transaction[], void>({
+              query: () => "wallet/transactions/",
+              
+            }),
     }),
 });
 
@@ -79,5 +84,6 @@ export const {
     useUpdateProfileMutation,
     useRequestPasswordResetMutation,
     useVerifyOtpMutation,
-    useConfirmPasswordResetMutation
+    useConfirmPasswordResetMutation,
+    useGetMyTransactionsQuery
 } = authApi;

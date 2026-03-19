@@ -163,7 +163,7 @@ const ClientChatWidget = () => {
       {/* Floating Button */}
       <button
         onClick={handleOpenClose}
-        className={`fixed bottom-11 right-6 sm:bottom-16 z-100 p-4  rounded-full shadow-lg text-white transition ${
+        className={`fixed bottom-20 right-6 sm:bottom-16 z-100 p-4  rounded-full shadow-lg text-white transition ${
           open ? "bg-violet-500" : "bg-blue-600"
         }`}
       >

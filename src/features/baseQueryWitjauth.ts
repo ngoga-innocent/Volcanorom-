@@ -10,6 +10,7 @@ import type {
 import url from "../url";
 import { logout } from "../redux/slices/authSlice";
 import { store } from "../app/store";
+import { toast } from "react-toastify";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: url,
@@ -17,6 +18,7 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers) => {
 
     const token = localStorage.getItem("access");
+    // console.log(token)
 
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
@@ -113,12 +115,21 @@ FORCE LOGOUT
 */
 
 const forceLogout = () => {
-
+  // Clear tokens
   localStorage.removeItem("access");
   localStorage.removeItem("refresh");
 
+  // Clear RTK Query cache 🔥 important
+  
+
+  // Update auth state
   store.dispatch(logout());
 
-  window.location.href = "/login?session=expired";
+  // Show message
+  toast.error("Session expired. Please login again.");
 
+  // Redirect (small delay so toast is visible)
+  setTimeout(() => {
+    window.location.href = "/login?session=expired";
+  }, 1500);
 };

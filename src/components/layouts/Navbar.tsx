@@ -32,7 +32,7 @@ const Navbar = () => {
             className="text-2xl md:text-3xl font-black tracking-wider items-center flex flex-row gap-x-3"
           >
             <img src={Logo} className="w-10 h-10 rounded-full" alt="" />
-            <span className="bg-linear-to-r from-red-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-blue-500 via-violet-500 to-blue-700 bg-clip-text text-transparent">
                VOLCANOROM
             </span>
             {/* <span className="text-slate-200">ROM</span> */}
@@ -50,7 +50,7 @@ const Navbar = () => {
               to="/store"
               className={`hover:text-white transition ${isActive("/store") ? "text-blue-400" : "text-gray-300"}`}
             >
-              Store
+              Services
             </Link>
             <Link
               to="/deposit"
@@ -66,6 +66,12 @@ const Navbar = () => {
                   className={`hover:text-white transition ${isActive("/profile") ? "text-blue-400" : "text-gray-300"}`}
                 >
                   Profile
+                </Link>
+                <Link
+                  to="/my-orders"
+                  className={`hover:text-white transition ${isActive("/profile") ? "text-blue-400" : "text-gray-300"}`}
+                >
+                  My Orders
                 </Link>
                 {user?.is_staff && (
                   <Link

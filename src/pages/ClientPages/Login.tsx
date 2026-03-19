@@ -31,7 +31,7 @@ export default function Login() {
     try {
       const res = await login(form).unwrap();
 
-      console.log("LOGIN RESPONSE:", res);
+      // console.log("LOGIN RESPONSE:", res);
 
       localStorage.setItem("access", res.access);
       localStorage.setItem("refresh", res.refresh);
@@ -43,8 +43,9 @@ export default function Login() {
       // console.log("IS ADMIN:", isAdmin);
 
       navigate(!res.profile.is_staff ? "/admin/dashboard" : "/");
+      
     } catch (err: any) {
-      console.log(err);
+      // console.log(err);
 
       if (err?.data?.error) {
         setFormError(err.data.error);

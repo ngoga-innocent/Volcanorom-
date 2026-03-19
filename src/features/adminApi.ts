@@ -6,25 +6,25 @@ import { baseQueryWithAuth } from "./baseQueryWitjauth";
 
 export const AdminApi = createApi({
   reducerPath: "api",
-  baseQuery:baseQueryWithAuth,
+  baseQuery: baseQueryWithAuth,
 
-//   baseQuery: fetchBaseQuery({
-//     baseUrl: url,
+  //   baseQuery: fetchBaseQuery({
+  //     baseUrl: url,
 
-//     prepareHeaders: (headers) => {
-//       if (typeof window !== "undefined") {
-//         const token = localStorage.getItem("access");
+  //     prepareHeaders: (headers) => {
+  //       if (typeof window !== "undefined") {
+  //         const token = localStorage.getItem("access");
 
-//         if (token) {
-//           headers.set("Authorization", `Bearer ${token}`);
-//         }
-//       }
+  //         if (token) {
+  //           headers.set("Authorization", `Bearer ${token}`);
+  //         }
+  //       }
 
-//       headers.set("Content-Type", "application/json");
+  //       headers.set("Content-Type", "application/json");
 
-//       return headers;
-//     },
-//   }),
+  //       return headers;
+  //     },
+  //   }),
 
   tagTypes: ["Users", "Transactions"],
 
@@ -43,7 +43,7 @@ export const AdminApi = createApi({
 
     deleteUser: builder.mutation<void, number>({
       query: (id) => ({
-        url: `/dashboard/users/${id}/`,
+        url: `/dashboard/${id}/delete_user/`,
         method: "DELETE",
       }),
       invalidatesTags: ["Users"],
@@ -51,8 +51,16 @@ export const AdminApi = createApi({
 
     updateUser: builder.mutation<UserProfile, { id: number; data: Partial<UserProfile> }>({
       query: ({ id, data }) => ({
-        url: `/dashboard/users/${id}/`,
+        url: `/dashboard/${id}/update_user/`,
         method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Users"],
+    }),
+    createUser: builder.mutation<UserProfile, Partial<UserProfile>>({
+      query: (data) => ({
+        url: "/dashboard/create_user/",
+        method: "POST",
         body: data,
       }),
       invalidatesTags: ["Users"],
@@ -79,7 +87,7 @@ export const AdminApi = createApi({
 
     rejectTransaction: builder.mutation<void, number>({
       query: (id) => ({
-        url: `/dashboard/reject/${id}/`,
+        url: `/dashboard/${id}/reject/`,
         method: "POST",
       }),
       invalidatesTags: ["Transactions"],
@@ -91,6 +99,7 @@ export const {
   useGetUsersQuery,
   useDeleteUserMutation,
   useUpdateUserMutation,
+  useCreateUserMutation,
   useGetTransactionsQuery,
   useApproveTransactionMutation,
   useRejectTransactionMutation,

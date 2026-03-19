@@ -54,7 +54,7 @@ const Register = () => {
     } catch (err: any) {
       if (err?.data) {
         // Handle Django field errors
-        console.log(err)
+        // console.log(err)
         const firstError =
           err.data.username?.[0] ||
           err.data.email?.[0] ||
