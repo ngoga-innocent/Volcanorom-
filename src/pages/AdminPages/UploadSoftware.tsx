@@ -91,6 +91,10 @@ export default function UploadSoftware() {
       formData.append("duration", duration);
       formData.append("client_fields", JSON.stringify(clientFields));
     }
+    if (type === "services") {
+      formData.append("duration", duration);
+      formData.append("client_fields", JSON.stringify(clientFields));
+    }
 
     if (type === "mdm_files") {
       formData.append("download_link", downloadLink);
@@ -166,11 +170,12 @@ export default function UploadSoftware() {
             <option value="">Select Type</option>
             <option value="tools">Tool</option>
             <option value="mdm_files">MDM File</option>
+            <option value="services">Services</option>
           </select>
 
           {/* TOOL OPTIONS */}
 
-          {type === "tools" && (
+          {type === "services" && (
             <>
               <select
                 required
@@ -223,7 +228,7 @@ export default function UploadSoftware() {
 
           {/* CLIENT FIELDS */}
 
-          {type === "tools" && (
+          {(type === "tools" || type==="services") && (
             <div className="bg-gray-50 border rounded-lg p-4 space-y-4">
 
               <h3 className="font-semibold flex items-center gap-2">
@@ -323,7 +328,7 @@ export default function UploadSoftware() {
           <p><b>Type:</b> {type}</p>
           <p><b>Price:</b> {price}</p>
 
-          {type === "tools" && (
+          {(type === "tools" || type==='services') && (
             <>
               <p><b>Duration:</b> {duration}</p>
               <p><b>Service:</b> {service}</p>

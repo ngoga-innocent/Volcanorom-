@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiDownload, FiSearch, FiLock, FiCpu } from "react-icons/fi";
+import {  FiSearch, FiLock, FiCpu } from "react-icons/fi";
 import { useGetSoftwaresQuery } from "../../../../features/softwareApi";
 import { useGetProfileQuery } from "../../../../features/auth/authApi";
 import { useNavigate } from "react-router-dom";

@@ -245,6 +245,7 @@ const Filters = ({
           {[
             { label: "All", value: "all" },
             { label: "Tools", value: "tools" },
+            { label: "Services", value: "services" },
             { label: "MDM Files", value: "mdm_files" },
           ].map((item) => (
             <button

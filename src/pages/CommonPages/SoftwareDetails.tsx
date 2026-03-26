@@ -20,7 +20,8 @@ const SoftwareDetails = () => {
   const { id } = useParams();
   const { data: software, isLoading } = useGetSoftwareQuery(id);
   const [createOrder, { isLoading: ordering }] = useCreateOrderMutation();
-
+  console.log('tools',software);
+  
   const [previewImage, setPreviewImage] = useState("");
   const [clientData, setClientData] = useState<any>({});
   const [clientFiles, setClientFiles] = useState<any>({});
@@ -138,7 +139,7 @@ const SoftwareDetails = () => {
                 {software.price_in_credits} Credits
               </div>
 
-              {software.type === "tools" && (
+              {software.type === "services" && (
                 <>
                   <div className="flex items-center gap-3 bg-slate-800 p-3 rounded-lg">
                     {serviceIcon()}
@@ -151,9 +152,10 @@ const SoftwareDetails = () => {
                   </div>
                 </>
               )}
+              
 
               {/* CLIENT FIELDS */}
-              {software.type === "tools" &&
+              {(software.type === "tools" || software.type === "services") &&
                 software.client_fields?.length > 0 && (
                   <div className="space-y-4">
                     <h3 className="font-semibold">Required Information</h3>
@@ -163,10 +165,11 @@ const SoftwareDetails = () => {
                         <label className="text-sm text-slate-400">
                           {field.name}
                         </label>
-
+                        
                         {field.type === "text" && (
                           <input
                             placeholder={`Enter ${field.name}`}
+                           
                             onChange={(e) =>
                               handleTextChange(field.name, e.target.value)
                             }
