@@ -20,8 +20,8 @@ const SoftwareDetails = () => {
   const { id } = useParams();
   const { data: software, isLoading } = useGetSoftwareQuery(id);
   const [createOrder, { isLoading: ordering }] = useCreateOrderMutation();
-  console.log('tools',software);
-  
+  // console.log("tools", software);
+
   const [previewImage, setPreviewImage] = useState("");
   const [clientData, setClientData] = useState<any>({});
   const [clientFiles, setClientFiles] = useState<any>({});
@@ -42,29 +42,47 @@ const SoftwareDetails = () => {
 
   const currentPreview = previewImage || images[0];
 
+  // const handleTextChange = (field: string, value: string) => {
+  //   console.log(field, value);
+
+  //   setClientData((prev: any) => ({ ...prev, [field]: value }));
+  // };
+
+  // const handleFileChange = (field: string, file: File | null) => {
+  //   setClientFiles((prev: any) => ({ ...prev, [field]: file }));
+  //   console.log(field, file);
+
+  //   // ✅ CREATE PREVIEW
+  //   if (file) {
+  //     const url = URL.createObjectURL(file);
+  //     setFilePreview((prev: any) => ({ ...prev, [field]: url }));
+  //   }
+  // };
   const handleTextChange = (field: string, value: string) => {
-    setClientData((prev: any) => ({ ...prev, [field]: value }));
+    const cleanField = field.trim();
+    setClientData((prev: any) => ({ ...prev, [cleanField]: value }));
   };
 
   const handleFileChange = (field: string, file: File | null) => {
-    setClientFiles((prev: any) => ({ ...prev, [field]: file }));
+    const cleanField = field.trim();
 
-    // ✅ CREATE PREVIEW
+    setClientFiles((prev: any) => ({ ...prev, [cleanField]: file }));
+
     if (file) {
       const url = URL.createObjectURL(file);
-      setFilePreview((prev: any) => ({ ...prev, [field]: url }));
+      setFilePreview((prev: any) => ({ ...prev, [cleanField]: url }));
     }
   };
 
   const handleOrder = async () => {
-    if (software.type === "tools") {
+    if (software.type === "tools" || software.type === "services") {
       for (const field of software.client_fields || []) {
-        if (field.type === "text" && !clientData[field.name]) {
+        if (field.type === "text" && !clientData[field.name.trim()]) {
           toast.error(`Please enter ${field.name}`);
           return;
         }
 
-        if (field.type === "image" && !clientFiles[field.name]) {
+        if (field.type === "image" && !clientFiles[field.name.trim()]) {
           toast.error(`Please upload ${field.name}`);
           return;
         }
@@ -77,23 +95,46 @@ const SoftwareDetails = () => {
       formData.append("software", id as string);
       formData.append("price_paid", software.price_in_credits);
 
+      // Object.keys(clientData).forEach((key) => {
+      //   formData.append(key, clientData[key]);
+      // });
+
+      // Object.keys(clientFiles).forEach((key) => {
+      //   formData.append(key, clientFiles[key]);
+      // });
+      // console.log([...formData.entries()]);
+      // ✅ TEXT FIELDS
       Object.keys(clientData).forEach((key) => {
-        formData.append(key, clientData[key]);
+        formData.append(key.trim(), clientData[key]);
       });
 
+      // ✅ FILE FIELDS
       Object.keys(clientFiles).forEach((key) => {
-        formData.append(key, clientFiles[key]);
+        formData.append(key.trim(), clientFiles[key]);
       });
+
+      // 🔍 DEBUG
+      for (let pair of formData.entries()) {
+        console.log("FORM DATA:", pair[0], pair[1]);
+      }
 
       await createOrder(formData).unwrap();
       toast.success("Order placed successfully");
     } catch (error: any) {
-      // console.log(error);
-      if (error.data.error) {
-        toast.error(error.data.error);
-      } else {
-        toast.error("Failed to place order");
-      }
+      console.log("Error details:", error.data);
+
+      // 1. Get the first error value if it's an object (like yours)
+      // 2. Fall back to error.data.error if it exists
+      // 3. Use the whole error.data string if available
+      // 4. Default to a generic failure message
+      const rawData = error.data?.error || error.data;
+
+      const errorMessage =
+        typeof rawData === "object"
+          ? Object.values(rawData)[0] // Extracts "Image is required"
+          : rawData || "Failed to place order";
+
+      toast.error(errorMessage);
     }
   };
 
@@ -152,7 +193,6 @@ const SoftwareDetails = () => {
                   </div>
                 </>
               )}
-              
 
               {/* CLIENT FIELDS */}
               {(software.type === "tools" || software.type === "services") &&
@@ -160,18 +200,19 @@ const SoftwareDetails = () => {
                   <div className="space-y-4">
                     <h3 className="font-semibold">Required Information</h3>
 
-                    {software.client_fields.map((field: ClientField) => (
-                      <div key={field.name} className="space-y-2">
+                    {software.client_fields.map((field: ClientField) => {
+                      const name = field.name.trim();
+                      return (
+                      <div key={name} className="space-y-2">
                         <label className="text-sm text-slate-400">
                           {field.name}
                         </label>
-                        
+
                         {field.type === "text" && (
                           <input
                             placeholder={`Enter ${field.name}`}
-                           
                             onChange={(e) =>
-                              handleTextChange(field.name, e.target.value)
+                              handleTextChange(name, e.target.value)
                             }
                             className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:border-blue-500 outline-none"
                           />
@@ -180,9 +221,9 @@ const SoftwareDetails = () => {
                         {field.type === "image" && (
                           <div className="space-y-2">
                             {/* PREVIEW */}
-                            {filePreview[field.name] && (
+                            {filePreview[name] && (
                               <img
-                                src={filePreview[field.name]}
+                                src={filePreview[name]}
                                 className="w-full h-40 object-cover rounded-lg border border-slate-700"
                               />
                             )}
@@ -192,16 +233,16 @@ const SoftwareDetails = () => {
                                 type="file"
                                 onChange={(e) =>
                                   handleFileChange(
-                                    field.name,
+                                    name,
                                     e.target.files?.[0] || null,
                                   )
                                 }
                                 className="hidden"
-                                id={field.name}
+                                id={name}
                               />
 
                               <label
-                                htmlFor={field.name}
+                                htmlFor={name}
                                 className="cursor-pointer flex flex-col items-center gap-2"
                               >
                                 <FiUpload size={20} />
@@ -213,7 +254,7 @@ const SoftwareDetails = () => {
                           </div>
                         )}
                       </div>
-                    ))}
+                    )})}
                   </div>
                 )}
 

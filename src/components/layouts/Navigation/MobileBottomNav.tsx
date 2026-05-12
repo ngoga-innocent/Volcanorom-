@@ -4,6 +4,7 @@ import {
   FaStore,
   FaCoins,
   FaDownload,
+  FaMedium,
   // FaUser,
   //   FaDownload
 } from "react-icons/fa";
@@ -33,17 +34,19 @@ const MobileBottomNav = () => {
   const tabs = [
     { name: "Home", path: "/", icon: FaHome },
     { name: "Services", path: "/store", icon: FaStore },
+    { name: "MDM Files", path: "/mdm-files", icon: FaMedium },
+
     {
       name: "Add Credits",
       path: "/deposit",
       icon: FaCoins,
-      badge: pendingTransactions >0 && pendingTransactions,
+      badge: pendingTransactions > 0 && pendingTransactions,
     },
     {
       name: "My Orders",
       path: "/my-orders",
       icon: FaDownload,
-      badge: pendingOrders >0 && pendingOrders,
+      badge: pendingOrders > 0 && pendingOrders,
       // badge:1
     },
   ];

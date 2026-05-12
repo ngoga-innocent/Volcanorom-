@@ -15,10 +15,8 @@ const AdminOrders = () => {
 
   const { data: orders = [], isLoading } = useGetMyOrdersQuery();
 
-  const [completeOrder, { isLoading: completing }] =
-    useCompleteOrderMutation();
-  const [cancelOrder, { isLoading: cancelling }] =
-    useCancelOrderMutation();
+  const [completeOrder, { isLoading: completing }] = useCompleteOrderMutation();
+  const [cancelOrder, { isLoading: cancelling }] = useCancelOrderMutation();
 
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [cancelTarget, setCancelTarget] = useState<any>(null);
@@ -86,18 +84,13 @@ const AdminOrders = () => {
       {/* HEADER */}
       <div className="flex items-center gap-3 mb-6">
         <FiPackage size={24} />
-        <h1 className="text-2xl md:text-3xl font-bold">
-          Orders Management
-        </h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Orders Management</h1>
       </div>
 
       {/* ================= MOBILE CARDS ================= */}
       <div className="md:hidden space-y-4">
         {orders.map((order: any) => (
-          <div
-            key={order.id}
-            className="bg-white p-4 rounded-xl shadow border"
-          >
+          <div key={order.id} className="bg-white p-4 rounded-xl shadow border">
             <div className="space-y-1 text-sm">
               <p>
                 <b>User:</b> {order.user_details.username}
@@ -112,12 +105,25 @@ const AdminOrders = () => {
                 <b>Status:</b>{" "}
                 <span
                   className={`px-2 py-1 text-xs rounded ${getStatusStyle(
-                    order.status
+                    order.status,
                   )}`}
                 >
                   {order.status}
                 </span>
               </p>
+              <div className="flex flex-row items-center gap-x-3">
+                <p>Created at:</p>
+                <p className="p-2 bg-gray-100 rounded-lg text-xs text-gray-500">
+                  {new Date(order.created_at).toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-2 mt-3">
@@ -155,6 +161,7 @@ const AdminOrders = () => {
         <table className="min-w-175 w-full text-sm">
           <thead className="bg-gray-100 text-gray-600">
             <tr>
+              <th className="p-4 text-left">Date</th>
               <th className="p-4 text-left">User</th>
               <th className="p-4 text-left">Software</th>
               <th className="p-4 text-center">Credits</th>
@@ -165,17 +172,22 @@ const AdminOrders = () => {
 
           <tbody>
             {orders.map((order: any) => (
-              <tr
-                key={order.id}
-                className="border-t hover:bg-gray-50"
-              >
+              <tr key={order.id} className="border-t hover:bg-gray-50">
+                <td className="p-4">
+                  {new Date(order.created_at).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </td>
                 <td className="p-4 font-medium">
                   {order.user_details.username}
                 </td>
 
-                <td className="p-4">
-                  {order.software_details?.name}
-                </td>
+                <td className="p-4">{order.software_details?.name}</td>
 
                 <td className="p-4 text-center font-semibold">
                   {order.price_paid}
@@ -184,7 +196,7 @@ const AdminOrders = () => {
                 <td className="p-4 text-center">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyle(
-                      order.status
+                      order.status,
                     )}`}
                   >
                     {order.status}
@@ -228,51 +240,37 @@ const AdminOrders = () => {
       {selectedOrder && (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full md:w-125 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">
-              Order Details
-            </h2>
+            <h2 className="text-xl font-bold mb-4">Order Details</h2>
 
             <div className="space-y-2 text-sm">
               <p>
                 <b>User:</b> {selectedOrder.user_details.username}
               </p>
               <p>
-                <b>Software:</b>{" "}
-                {selectedOrder.software_details?.name}
+                <b>Software:</b> {selectedOrder.software_details?.name}
               </p>
               <p>
                 <b>Price:</b> {selectedOrder.price_paid} credits
               </p>
             </div>
 
-            {(selectedOrder.client_data ||
-              selectedOrder.files?.length > 0) && (
+            {(selectedOrder.client_data || selectedOrder.files?.length > 0) && (
               <div className="mt-5">
-                <h3 className="font-semibold mb-3">
-                  Client Data
-                </h3>
+                <h3 className="font-semibold mb-3">Client Data</h3>
 
                 <div className="grid gap-3">
                   {selectedOrder.client_data &&
-                    Object.entries(
-                      selectedOrder.client_data
-                    ).map(([key, value]: any) => (
-                      <div
-                        key={key}
-                        className="bg-gray-100 p-3 rounded-lg"
-                      >
-                        <p className="text-sm font-medium mb-1">
-                          {key}
-                        </p>
-                        <p className="text-sm">{value}</p>
-                      </div>
-                    ))}
+                    Object.entries(selectedOrder.client_data).map(
+                      ([key, value]: any) => (
+                        <div key={key} className="bg-gray-100 p-3 rounded-lg">
+                          <p className="text-sm font-medium mb-1">{key}</p>
+                          <p className="text-sm">{value}</p>
+                        </div>
+                      ),
+                    )}
 
                   {selectedOrder.files?.map((file: any) => (
-                    <div
-                      key={file.id}
-                      className="bg-gray-100 p-3 rounded-lg"
-                    >
+                    <div key={file.id} className="bg-gray-100 p-3 rounded-lg">
                       <p className="text-sm font-medium mb-2">
                         {file.field_name}
                       </p>
@@ -291,25 +289,19 @@ const AdminOrders = () => {
                 <input
                   placeholder="Download Link"
                   className="w-full border p-3 rounded-lg"
-                  onChange={(e) =>
-                    setDownloadLink(e.target.value)
-                  }
+                  onChange={(e) => setDownloadLink(e.target.value)}
                 />
 
                 <textarea
                   placeholder="License Key"
                   className="w-full border p-3 rounded-lg"
-                  onChange={(e) =>
-                    setLicenseKey(e.target.value)
-                  }
+                  onChange={(e) => setLicenseKey(e.target.value)}
                 />
 
                 <textarea
                   placeholder="Admin Note"
                   className="w-full border p-3 rounded-lg"
-                  onChange={(e) =>
-                    setAdminNote(e.target.value)
-                  }
+                  onChange={(e) => setAdminNote(e.target.value)}
                 />
 
                 <button
@@ -334,16 +326,12 @@ const AdminOrders = () => {
       {cancelTarget && (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4">
           <div className="bg-white p-6 rounded-2xl w-full md:w-100">
-            <h2 className="text-lg font-bold mb-3">
-              Cancel Order
-            </h2>
+            <h2 className="text-lg font-bold mb-3">Cancel Order</h2>
 
             <textarea
               placeholder="Reason for cancellation"
               className="w-full border p-3 rounded-lg"
-              onChange={(e) =>
-                setAdminNote(e.target.value)
-              }
+              onChange={(e) => setAdminNote(e.target.value)}
             />
 
             <div className="flex justify-end gap-2 mt-4">

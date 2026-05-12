@@ -12,7 +12,7 @@ import { useLoader } from "../../app/LoaderContext";
 import mpesa from "../../assets/mpesa.jpg";
 import lumicash from "../../assets/lumicash.jpg";
 import safaricom from "../../assets/safaricom.jpeg";
-
+import bancobu from "../../assets/Bancobu.jpg";
 import { useGetMyTransactionsQuery } from "../../features/auth/authApi";
 // Local currency multipliers for demo (replace with API if needed)
 const USDT_TO_CREDITS = 1;
@@ -43,6 +43,13 @@ const paymentMethods: any = {
     number: "254797429859",
     name: "EMMANUEL HONDEKA",
     icon: mpesa,
+  },
+  manual_Bancobu: {
+    label: "Bancobu Enoti",
+    currency: "BIF",
+    number: "69648647",
+    name: "NDAGIJIMANA ISSA",
+    icon: bancobu,
   },
 };
 
@@ -146,6 +153,7 @@ export default function Deposit() {
           },
           body: formData,
         });
+        console.log(await res.json());
 
         if (!res.ok) throw new Error("Deposit submission failed");
         toast.success("Deposit submitted for approval");
@@ -208,7 +216,11 @@ export default function Deposit() {
               }`}
             >
               {typeof value.icon === "string" ? (
-                <img src={value.icon} alt={value.label} className="w-6 h-6" />
+                <img
+                  src={value.icon}
+                  alt={value.label}
+                  className="w-6 h-6 object-contain"
+                />
               ) : (
                 value.icon
               )}

@@ -1,96 +1,178 @@
 import { Link, useNavigate } from "react-router-dom";
-import {  FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import type { RootState } from "../../../app/store";
 import { useState } from "react";
 import { logout } from "../../../redux/slices/authSlice";
-import Logo from '../../../assets/cuckoo.png'
+import Logo from "../../../assets/cuckoo.png";
+
 const MobileTopBar = () => {
   const { access, user } = useAppSelector((state: RootState) => state.auth);
+
   const [profileOpen, setProfileOpen] = useState(false);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
+
   return (
-    <div className="lg:hidden fixed top-0 left-0 w-full z-50 bg-slate-900/90 backdrop-blur-md border-b border-white/10 shadow-md">
-      <div className="flex items-center justify-between px-4 h-14">
-        {/* Logo */}
-        <Link to="/" className="text-lg font-bold tracking-wider flex flex-row-reverse items-center gap-x-2 text-white">
-          VOLCANOROM
-          <img src={Logo} className="w-8 h-8 rounded-full" alt="" />
-        </Link>
+    <header
+      className="
+        lg:hidden
+        fixed top-0 left-0 right-0
+        z-50
+        bg-slate-900/90
+        backdrop-blur-md
+        border-b border-white/10
+      "
+    >
+      <div className="h-14 px-3 sm:px-4">
+        <div className="flex items-center justify-between h-full gap-2">
+          {/* LOGO */}
+          <Link
+            to="/"
+            className="
+              flex items-center gap-2
+              min-w-0 flex-1
+              text-white
+            "
+          >
+            <img
+              src={Logo}
+              className="w-8 h-8 rounded-full shrink-0"
+              alt="Logo"
+            />
 
-        {/* Right icons */}
-        <div className="flex items-center gap-3">
-          {/* Admin Dashboard */}
-          {user?.is_staff && (
-            <Link
-              to="/admin/dashboard"
-              className="text-sm font-semibold bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition"
+            <span
+              className="
+                font-bold tracking-wide
+                text-sm sm:text-base
+                truncate
+              "
             >
-              Dashboard
-            </Link>
-          )}
-
-          {/* Notifications */}
-          {/* <button className="relative p-2 rounded hover:bg-white/10 transition">
-            <FaBell className="text-white text-lg" />
-            
-            <span className="absolute -top-1 -right-1 bg-red-500 text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-semibold">
-              2
+              VOLCANOROM
             </span>
-          </button> */}
+          </Link>
 
-          {/* Profile / Login */}
-          {access ? (
-            <div className="relative">
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="p-2 rounded hover:bg-white/10 transition"
-              >
-                <FaUser className="text-white text-lg" />
-              </button>
-
-              {profileOpen && (
-                <div className="absolute right-0 mt-2 w-32 bg-white text-gray-800 rounded-lg shadow-lg overflow-hidden z-50">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100 transition"
-                  >
-                    Profile
-                  </Link>
-
-                  <button
-                    onClick={handleLogout}
-                    className="block px-4 py-2 text-sm hover:bg-gray-100 transition"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
+          {/* RIGHT SIDE */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* DASHBOARD */}
+            {user?.is_staff && (
               <Link
-                to="/login"
-                className="text-sm font-semibold text-white hover:underline transition"
+                to="/admin/dashboard"
+                className="
+                  hidden xs:flex
+                  text-xs font-medium
+                  bg-green-600 hover:bg-green-700
+                  px-2.5 py-1.5
+                  rounded-lg
+                  text-white
+                  transition
+                  whitespace-nowrap
+                "
               >
-                Login
+                Dashboard
               </Link>
-              <Link
-                to="/register"
-                className="text-sm font-semibold text-white bg-blue-600 px-3 py-1 rounded-lg hover:bg-blue-700 transition"
-              >
-                Register
-              </Link>
-            </div>
-          )}
+            )}
+
+            {/* AUTH */}
+            {access ? (
+              <div className="relative">
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="
+                    h-9 w-9
+                    flex items-center justify-center
+                    rounded-full
+                    hover:bg-white/10
+                    transition
+                    text-white
+                  "
+                >
+                  <FaUser className="text-sm" />
+                </button>
+
+                {profileOpen && (
+                  <div
+                    className="
+                      absolute right-0 mt-2
+                      w-40
+                      z-50
+                      bg-white
+                      text-gray-800
+                      rounded-xl
+                      shadow-2xl
+                      overflow-hidden
+                      border border-gray-100
+                    "
+                  >
+                    <Link
+                      to="/profile"
+                      className="
+                        block px-4 py-3
+                        text-sm
+                        hover:bg-gray-100
+                        transition
+                      "
+                      onClick={() => setProfileOpen(false)}
+                    >
+                      Profile
+                    </Link>
+
+                    <button
+                      onClick={handleLogout}
+                      className="
+                        w-full text-left
+                        px-4 py-3
+                        text-sm
+                        hover:bg-gray-100
+                        transition
+                      "
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 shrink-0">
+                <Link
+                  to="/login"
+                  className="
+                    text-sm
+                    text-white/90
+                    hover:text-white
+                    transition
+                    whitespace-nowrap
+                  "
+                >
+                  Login
+                </Link>
+
+                <Link
+                  to="/register"
+                  className="
+                    text-sm font-medium
+                    bg-blue-600 hover:bg-blue-700
+                    px-3 py-1.5
+                    rounded-lg
+                    text-white
+                    transition
+                    whitespace-nowrap
+                  "
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 

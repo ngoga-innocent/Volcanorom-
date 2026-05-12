@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 
 import MobileBottomNav from "./Navigation/MobileBottomNav";
 import MobileTopBar from "./Navigation/MobileTopBar";
-import Logo from '../../assets/cuckoo.png'
+import Logo from "../../assets/cuckoo.png";
 const Navbar = () => {
   const { access, user } = useAppSelector((state: RootState) => state.auth);
   const dispatch = useAppDispatch();
@@ -19,7 +19,9 @@ const Navbar = () => {
   };
 
   // Helper to check active tab
-  const isActive = (path: string) => location.pathname === path;
+  // const isActive = (path: string) => location.pathname === path;
+  const isActivePath = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(path + "/");
 
   return (
     <>
@@ -33,7 +35,7 @@ const Navbar = () => {
           >
             <img src={Logo} className="w-10 h-10 rounded-full" alt="" />
             <span className="bg-linear-to-r from-blue-500 via-violet-500 to-blue-700 bg-clip-text text-transparent">
-               VOLCANOROM
+              VOLCANOROM
             </span>
             {/* <span className="text-slate-200">ROM</span> */}
           </Link>
@@ -42,19 +44,25 @@ const Navbar = () => {
           <div className="flex items-center gap-8 text-sm font-medium">
             <Link
               to="/"
-              className={`hover:text-white transition ${isActive("/") ? "text-blue-400" : "text-gray-300"}`}
+              className={`hover:text-white transition ${isActivePath("/") ? "text-blue-400" : "text-gray-300"}`}
             >
               Home
             </Link>
             <Link
               to="/store"
-              className={`hover:text-white transition ${isActive("/store") ? "text-blue-400" : "text-gray-300"}`}
+              className={`hover:text-white transition ${isActivePath("/store") ? "text-blue-400" : "text-gray-300"}`}
             >
               Services
             </Link>
             <Link
+              to="/mdm-files"
+              className={`hover:text-white transition ${isActivePath("/mdm-files") ? "text-blue-400" : "text-gray-300"}`}
+            >
+              Mdm Files
+            </Link>
+            <Link
               to="/deposit"
-              className={`hover:text-white transition ${isActive("/deposit") ? "text-blue-400" : "text-gray-300"}`}
+              className={`hover:text-white transition ${isActivePath("/deposit") ? "text-blue-400" : "text-gray-300"}`}
             >
               Credits
             </Link>
@@ -63,20 +71,20 @@ const Navbar = () => {
               <>
                 <Link
                   to="/profile"
-                  className={`hover:text-white transition ${isActive("/profile") ? "text-blue-400" : "text-gray-300"}`}
+                  className={`hover:text-white transition ${isActivePath("/profile") ? "text-blue-400" : "text-gray-300"}`}
                 >
                   Profile
                 </Link>
                 <Link
                   to="/my-orders"
-                  className={`hover:text-white transition ${isActive("/profile") ? "text-blue-400" : "text-gray-300"}`}
+                  className={`hover:text-white transition ${isActivePath("/my-orders") ? "text-blue-400" : "text-gray-300"}`}
                 >
                   My Orders
                 </Link>
                 {user?.is_staff && (
                   <Link
                     to="/admin/dashboard"
-                    className={`hover:text-white transition ${isActive("/admin/dashboard") ? "text-blue-400" : "text-gray-300"}`}
+                    className={`hover:text-white transition ${isActivePath("/admin/dashboard") ? "text-blue-400" : "text-gray-300"}`}
                   >
                     Dashboard
                   </Link>

@@ -10,13 +10,17 @@ import {
   FaTimes,
   FaJediOrder,
 } from "react-icons/fa";
-import { ImageDown } from "lucide-react";
+import { ImageDown, MegaphoneIcon } from "lucide-react";
 import { useGetMyOrdersQuery } from "../../features/orderApi";
 import { useGetTransactionsQuery } from "../../features/adminApi";
 
 const AdminSidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
-  const { data: transactions = [] } = useGetTransactionsQuery(undefined,{pollingInterval:5000});
-  const { data: orders = [] } = useGetMyOrdersQuery(undefined,{pollingInterval:5000});
+  const { data: transactions = [] } = useGetTransactionsQuery(undefined, {
+    pollingInterval: 5000,
+  });
+  const { data: orders = [] } = useGetMyOrdersQuery(undefined, {
+    pollingInterval: 5000,
+  });
 
   const pendingTransactions = transactions.filter(
     (t: any) => t.status === "pending",
@@ -44,7 +48,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
       path: "/admin/transactions",
       badge: pendingTransactions,
     },
-    { name: "Deposits", icon: <FaWallet />, path: "/deposit" },
+    { name: "Deposits", icon: <FaWallet />, path: "/admin/deposit" },
     { name: "Softwares", icon: <FaBox />, path: "/admin/softwares" },
     { name: "Chats", icon: <FaComments />, path: "/admin/chats" },
     {
@@ -54,6 +58,11 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }: any) => {
       badge: pendingOrders,
     },
     { name: "Hero", icon: <ImageDown />, path: "/admin/hero" },
+    {
+      name: "Announcements",
+      icon: <MegaphoneIcon />,
+      path: "/admin/announcements",
+    },
   ];
 
   return (

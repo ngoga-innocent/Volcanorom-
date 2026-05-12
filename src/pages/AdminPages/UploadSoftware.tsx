@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { useCreateSoftwareMutation } from "../../features/softwareApi";
-import {
-  FaTools,
-  FaPlus,
-  FaTrash,
-  FaMobileAlt,
-  FaImage,
-} from "react-icons/fa";
+import { FaTools, FaPlus, FaTrash, FaMobileAlt, FaImage } from "react-icons/fa";
 
 type ClientField = {
   name: string;
@@ -14,7 +8,6 @@ type ClientField = {
 };
 
 export default function UploadSoftware() {
-
   const [createSoftware, { isLoading }] = useCreateSoftwareMutation();
 
   const [name, setName] = useState("");
@@ -31,38 +24,62 @@ export default function UploadSoftware() {
   const [fieldType, setFieldType] = useState<"text" | "image">("text");
 
   const [thumbnail, setThumbnail] = useState<File | null>(null);
-
+  const [mdmCategory, setMdmCategory] = useState("");
   const durations = [
-    "2 Hours","4 Hours","6 Hours","12 Hours",
-    "24 Hours","48 Hours","1 Week","1 Month",
-    "3 Months","6 Months","12 Months",
+    "1-10 Minutes",
+    "1-30 Minutes",
+    "1 Hour",
+    "2 Hours",
+    "4 Hours",
+    "6 Hours",
+    "12 Hours",
+    "24 Hours",
+    "48 Hours",
+    "1 Week",
+    "1 Month",
+    "3 Months",
+    "6 Months",
+    "12 Months",
   ];
+  const mdmCategories = [
+    {
+      value: "transsion",
+      label: "Transsion Devices (Tecno, Infinix, Itel)",
+    },
 
+    {
+      value: "samsung",
+      label: "Samsung Mobile",
+    },
+
+    {
+      value: "hmd",
+      label: "HMD",
+    },
+
+    {
+      value: "onfone",
+      label: "Onfone Mobile",
+    },
+  ];
   /*
   =========================
   ADD FIELD
   =========================
   */
   const addField = () => {
-
     if (!fieldName) return;
 
-    setClientFields([
-      ...clientFields,
-      { name: fieldName, type: fieldType },
-    ]);
+    setClientFields([...clientFields, { name: fieldName, type: fieldType }]);
 
     setFieldName("");
     setFieldType("text");
-
   };
 
   const removeField = (index: number) => {
-
     const updated = [...clientFields];
     updated.splice(index, 1);
     setClientFields(updated);
-
   };
 
   /*
@@ -71,7 +88,6 @@ export default function UploadSoftware() {
   =========================
   */
   const handleSubmit = async (e: React.FormEvent) => {
-
     e.preventDefault();
 
     if (type === "tools" && !duration) {
@@ -98,6 +114,7 @@ export default function UploadSoftware() {
 
     if (type === "mdm_files") {
       formData.append("download_link", downloadLink);
+      formData.append("mdm_category", mdmCategory);
     }
 
     if (thumbnail) {
@@ -105,7 +122,6 @@ export default function UploadSoftware() {
     }
 
     try {
-
       await createSoftware(formData).unwrap();
 
       alert("Uploaded successfully");
@@ -119,28 +135,21 @@ export default function UploadSoftware() {
       setService("");
       setClientFields([]);
       setThumbnail(null);
-
+      setMdmCategory("");
     } catch {
-
       alert("Upload failed");
-
     }
-
   };
 
   return (
-
     <div className="min-h-screen bg-gray-100 text-gray-700 p-6 md:p-10">
-
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10">
-
         {/* FORM */}
 
         <form
           onSubmit={handleSubmit}
           className="bg-white shadow-xl rounded-xl p-8 space-y-6"
         >
-
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <FaTools /> Upload Tool / File
           </h1>
@@ -217,20 +226,38 @@ export default function UploadSoftware() {
           {/* DOWNLOAD LINK */}
 
           {type === "mdm_files" && (
-            <input
-              placeholder="Download link"
-              required
-              value={downloadLink}
-              onChange={(e) => setDownloadLink(e.target.value)}
-              className="border p-3 rounded w-full"
-            />
+            <div className="space-y-4">
+              {/* CATEGORY */}
+              <select
+                required
+                value={mdmCategory}
+                onChange={(e) => setMdmCategory(e.target.value)}
+                className="border p-3 rounded w-full"
+              >
+                <option value="">Select MDM Category</option>
+
+                {mdmCategories.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+
+              {/* DOWNLOAD LINK */}
+              <input
+                placeholder="Download link"
+                required
+                value={downloadLink}
+                onChange={(e) => setDownloadLink(e.target.value)}
+                className="border p-3 rounded w-full"
+              />
+            </div>
           )}
 
           {/* CLIENT FIELDS */}
 
-          {(type === "tools" || type==="services") && (
+          {(type === "tools" || type === "services") && (
             <div className="bg-gray-50 border rounded-lg p-4 space-y-4">
-
               <h3 className="font-semibold flex items-center gap-2">
                 <FaMobileAlt /> Client Required Fields
               </h3>
@@ -238,11 +265,10 @@ export default function UploadSoftware() {
               {/* INPUT */}
 
               <div className="grid grid-cols-2 gap-2">
-
                 <input
                   placeholder="Field name (IMEI)"
                   value={fieldName}
-                  onChange={(e) => setFieldName(e.target.value)}
+                  onChange={(e) => setFieldName(e.target.value.trim())}
                   className="border p-2 rounded"
                 />
 
@@ -256,7 +282,6 @@ export default function UploadSoftware() {
                   <option value="text">Text</option>
                   <option value="image">Image</option>
                 </select>
-
               </div>
 
               <button
@@ -270,21 +295,17 @@ export default function UploadSoftware() {
               {/* LIST */}
 
               <div className="space-y-2">
-
                 {clientFields.map((field, index) => (
-
                   <div
                     key={index}
                     className="flex justify-between items-center bg-white border p-2 rounded"
                   >
                     <div className="flex items-center gap-2">
-
                       {field.type === "image" ? <FaImage /> : "📝"}
 
                       <span>
                         {field.name} ({field.type})
                       </span>
-
                     </div>
 
                     <button
@@ -293,13 +314,9 @@ export default function UploadSoftware() {
                     >
                       <FaTrash />
                     </button>
-
                   </div>
-
                 ))}
-
               </div>
-
             </div>
           )}
 
@@ -315,23 +332,31 @@ export default function UploadSoftware() {
           <button className="bg-blue-600 text-white py-3 rounded w-full">
             {isLoading ? "Uploading..." : "Upload"}
           </button>
-
         </form>
 
         {/* PREVIEW */}
 
         <div className="bg-white shadow-xl rounded-xl p-8 space-y-4">
-
           <h2 className="text-xl font-semibold">Preview</h2>
 
-          <p><b>Name:</b> {name}</p>
-          <p><b>Type:</b> {type}</p>
-          <p><b>Price:</b> {price}</p>
+          <p>
+            <b>Name:</b> {name}
+          </p>
+          <p>
+            <b>Type:</b> {type}
+          </p>
+          <p>
+            <b>Price:</b> {price}
+          </p>
 
-          {(type === "tools" || type==='services') && (
+          {(type === "tools" || type === "services") && (
             <>
-              <p><b>Duration:</b> {duration}</p>
-              <p><b>Service:</b> {service}</p>
+              <p>
+                <b>Duration:</b> {duration}
+              </p>
+              <p>
+                <b>Service:</b> {service}
+              </p>
 
               <div>
                 <b>Client Fields:</b>
@@ -344,6 +369,17 @@ export default function UploadSoftware() {
               </div>
             </>
           )}
+          {type === "mdm_files" && (
+            <>
+              <p>
+                <b>MDM Category:</b> {mdmCategory}
+              </p>
+
+              <p>
+                <b>Download Link:</b> {downloadLink}
+              </p>
+            </>
+          )}
 
           {thumbnail && (
             <img
@@ -351,11 +387,8 @@ export default function UploadSoftware() {
               className="rounded mt-4"
             />
           )}
-
         </div>
-
       </div>
-
     </div>
   );
 }

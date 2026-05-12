@@ -36,6 +36,44 @@
 .btn-secondary {
   @apply border px-4 py-2 rounded-lg hover:bg-gray-100;
 }
+body {
+  @apply text-black
+}
+.announcement-marquee {
+  display: inline-block;
+  min-width: 100%;
+  padding-left: 100%;
+  animation: marqueeMove 30s linear infinite;
+}
+
+.announcement-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeMove {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+@keyframes slideLeft {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.25s ease;
+}
 /* 
 
 

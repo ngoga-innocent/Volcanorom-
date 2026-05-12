@@ -25,7 +25,7 @@ export default function AdminUsers() {
   const filtered = users.filter(
     (u) =>
       u.username?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase())
+      u.email?.toLowerCase().includes(search.toLowerCase()),
   );
 
   const getRole = (user: UserProfile) => {
@@ -59,13 +59,10 @@ export default function AdminUsers() {
 
   return (
     <div className="p-6 bg-gray-50 text-black min-h-screen">
-
       {/* HEADER */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            User Management
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
           <p className="text-sm text-gray-500">
             Manage all system users and permissions
           </p>
@@ -92,96 +89,156 @@ export default function AdminUsers() {
       </div>
 
       {/* TABLE */}
+      {/* TABLE */}
       <div className="bg-white rounded-xl shadow overflow-hidden">
-
         {isLoading && (
-          <div className="p-10 text-center text-gray-500">
-            Loading users...
-          </div>
+          <div className="p-10 text-center text-gray-500">Loading users...</div>
         )}
 
         {!isLoading && filtered.length === 0 && (
-          <div className="p-10 text-center text-gray-500">
-            No users found
-          </div>
+          <div className="p-10 text-center text-gray-500">No users found</div>
         )}
 
+        {/* DESKTOP TABLE */}
         {!isLoading && filtered.length > 0 && (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-600">
-              <tr>
-                <th className="p-4 text-left">User</th>
-                <th className="p-4 text-left">Contact</th>
-                <th className="p-4 text-left">Balance</th>
-                <th className="p-4 text-left">Role</th>
-                <th className="p-4 text-left">Actions</th>
-              </tr>
-            </thead>
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm min-w-[700px]">
+                <thead className="bg-gray-100 text-gray-600">
+                  <tr>
+                    <th className="p-4 text-left">User</th>
+                    <th className="p-4 text-left">Contact</th>
+                    <th className="p-4 text-left">Balance</th>
+                    <th className="p-4 text-left">Role</th>
+                    <th className="p-4 text-left">Actions</th>
+                  </tr>
+                </thead>
 
-            <tbody>
+                <tbody>
+                  {filtered.map((user) => (
+                    <tr
+                      key={user.id}
+                      className="border-b hover:bg-gray-50 transition"
+                    >
+                      {/* USER */}
+                      <td className="p-4">
+                        <div className="font-medium text-gray-800">
+                          {user.username}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          ID: {user.id}
+                        </div>
+                      </td>
+
+                      {/* CONTACT */}
+                      <td className="p-4">
+                        <div>{user.email}</div>
+                        <div className="text-xs text-gray-500">
+                          {user.phone_number || "No phone"}
+                        </div>
+                      </td>
+
+                      {/* BALANCE */}
+                      <td className="p-4 font-semibold text-blue-600">
+                        ${user.balance}
+                      </td>
+
+                      {/* ROLE */}
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 text-xs rounded-full font-medium ${
+                            user.is_superuser
+                              ? "bg-purple-100 text-purple-600"
+                              : user.is_staff
+                                ? "bg-green-100 text-green-600"
+                                : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {getRole(user)}
+                        </span>
+                      </td>
+
+                      {/* ACTIONS */}
+                      <td className="p-4 flex gap-2">
+                        <button
+                          onClick={() => setEditingUser(user)}
+                          className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                        >
+                          <Edit size={14} />
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                        >
+                          <Trash size={14} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* MOBILE CARDS */}
+            <div className="md:hidden divide-y">
               {filtered.map((user) => (
-                <tr
-                  key={user.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  {/* USER */}
-                  <td className="p-4">
-                    <div className="font-medium text-gray-800">
-                      {user.username}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      ID: {user.id}
-                    </div>
-                  </td>
+                <div key={user.id} className="p-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="font-semibold text-gray-800">
+                        {user.username}
+                      </h3>
 
-                  {/* CONTACT */}
-                  <td className="p-4">
-                    <div>{user.email}</div>
-                    <div className="text-xs text-gray-500">
-                      {user.phone_number || "No phone"}
+                      <p className="text-xs text-gray-500">ID: {user.id}</p>
                     </div>
-                  </td>
 
-                  {/* BALANCE */}
-                  <td className="p-4 font-semibold text-blue-600">
-                    ${user.balance}
-                  </td>
-
-                  {/* ROLE */}
-                  <td className="p-4">
                     <span
                       className={`px-3 py-1 text-xs rounded-full font-medium ${
                         user.is_superuser
                           ? "bg-purple-100 text-purple-600"
                           : user.is_staff
-                          ? "bg-green-100 text-green-600"
-                          : "bg-gray-100 text-gray-600"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-gray-100 text-gray-600"
                       }`}
                     >
                       {getRole(user)}
                     </span>
-                  </td>
+                  </div>
 
-                  {/* ACTIONS */}
-                  <td className="p-4 flex gap-2">
+                  <div className="space-y-1 text-sm">
+                    <p className="text-gray-700 break-all">{user.email}</p>
+
+                    <p className="text-gray-500">
+                      {user.phone_number || "No phone"}
+                    </p>
+
+                    <p className="font-semibold text-blue-600">
+                      Balance: ${user.balance}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2 mt-4">
                     <button
                       onClick={() => setEditingUser(user)}
-                      className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                      className="flex-1 flex items-center justify-center gap-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
                     >
                       <Edit size={14} />
+                      Edit
                     </button>
 
                     <button
                       onClick={() => handleDelete(user.id)}
-                      className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                      className="flex-1 flex items-center justify-center gap-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
                     >
                       <Trash size={14} />
+                      Delete
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -190,7 +247,7 @@ export default function AdminUsers() {
         <UserModal
           title="Create User"
           onClose={() => setShowCreate(false)}
-          onSubmit={async (data:any) => {
+          onSubmit={async (data: any) => {
             const toastId = toast.loading("Creating user...");
 
             try {
@@ -220,7 +277,7 @@ export default function AdminUsers() {
           title="Edit User"
           user={editingUser}
           onClose={() => setEditingUser(null)}
-          onSubmit={async (data:any) => {
+          onSubmit={async (data: any) => {
             const toastId = toast.loading("Updating user...");
 
             try {
@@ -260,11 +317,7 @@ function UserModal({ title, user, onClose, onSubmit }: any) {
     email: user?.email || "",
     phone_number: user?.phone_number || "",
     password: "",
-    role: user?.is_superuser
-      ? "admin"
-      : user?.is_staff
-      ? "staff"
-      : "user",
+    role: user?.is_superuser ? "admin" : user?.is_staff ? "staff" : "user",
   });
 
   const handleChange = (e: any) => {
@@ -289,9 +342,7 @@ function UserModal({ title, user, onClose, onSubmit }: any) {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
       <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-lg">
-
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="font-semibold text-lg">{title}</h2>
@@ -302,7 +353,6 @@ function UserModal({ title, user, onClose, onSubmit }: any) {
 
         {/* FORM */}
         <div className="space-y-4">
-
           <input
             name="username"
             placeholder="Username"
@@ -348,7 +398,6 @@ function UserModal({ title, user, onClose, onSubmit }: any) {
             <option value="staff">Staff</option>
             <option value="admin">Admin</option>
           </select>
-
         </div>
 
         {/* ACTIONS */}
@@ -361,7 +410,6 @@ function UserModal({ title, user, onClose, onSubmit }: any) {
             Save
           </button>
         </div>
-
       </div>
     </div>
   );

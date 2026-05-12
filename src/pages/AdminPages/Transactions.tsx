@@ -67,7 +67,7 @@ export default function AdminTransactions() {
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
   const used = transactions
-    .filter((t) => t.type === "usage")
+    .filter((t) => t.type === "deduction")
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
   const formatCurrency = (value: number) =>

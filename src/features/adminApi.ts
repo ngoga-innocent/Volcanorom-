@@ -26,7 +26,7 @@ export const AdminApi = createApi({
   //     },
   //   }),
 
-  tagTypes: ["Users", "Transactions"],
+  tagTypes: ["Users", "Transactions", "Wallet"],
 
   endpoints: (builder) => ({
 
@@ -92,6 +92,15 @@ export const AdminApi = createApi({
       }),
       invalidatesTags: ["Transactions"],
     }),
+    adminAddCredit: builder.mutation({
+      query: (data) => ({
+        url: "/api/wallet/admin-deposit/",
+        method: "POST",
+        body: data,
+      }),
+
+      invalidatesTags: ["Wallet"],
+    }),
 
   }),
 });
@@ -103,4 +112,5 @@ export const {
   useGetTransactionsQuery,
   useApproveTransactionMutation,
   useRejectTransactionMutation,
+  useAdminAddCreditMutation
 } = AdminApi;

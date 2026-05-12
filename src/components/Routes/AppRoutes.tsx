@@ -29,6 +29,9 @@ import PaymentResult from "../../pages/CommonPages/PaymentResult";
 import MyOrders from "../../pages/ClientPages/Myorders";
 import AdminOrders from "../../pages/AdminPages/Orders";
 import HeroAdmin from "../../pages/AdminPages/HeroPage";
+import Announcements from "../../pages/AdminPages/Announcements";
+import AdminDepositPage from "../../pages/AdminPages/AdminDeposit";
+import MdmFiles from "../../pages/ClientPages/Mdm_files";
 
 const AppRoutes = () => {
   return (
@@ -40,9 +43,9 @@ const AppRoutes = () => {
         <Route path="/store" element={<SoftwareStore />} />
         <Route path="/about" element={<About />} />
         <Route path="/payment-result" element={<PaymentResult />} />
-        
+        <Route path="/mdm-files" element={<MdmFiles />} />
         <Route path="/contact" element={<Contact />} />
-        
+
         <Route path="/my-orders" element={<MyOrders />} />
 
         <Route path="/help" element={<HelpCenter />} />
@@ -74,11 +77,13 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="Hero" element={<HeroAdmin />} />
+          <Route path="announcements" element={<Announcements />} />
           <Route path="transactions" element={<AdminTransactions />} />
           <Route path="softwares" element={<SoftwareManager />} />
           <Route path="upload-software" element={<UploadSoftware />} />
           <Route path="chats" element={<AdminChatsPage />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="deposit" element={<AdminDepositPage />} />
         </Route>
       </Route>
     </Routes>
