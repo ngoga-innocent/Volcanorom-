@@ -8,7 +8,9 @@ import MobileBottomNav from "./Navigation/MobileBottomNav";
 import MobileTopBar from "./Navigation/MobileTopBar";
 import Logo from "../../assets/cuckoo.png";
 const Navbar = () => {
-  const { access, user } = useAppSelector((state: RootState) => state.auth);
+  const { access } = useAppSelector((state: RootState) => state.auth);
+  const storedProfile = localStorage.getItem("profile");
+  const user = storedProfile ? JSON.parse(storedProfile) : null;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();

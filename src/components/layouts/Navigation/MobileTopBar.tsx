@@ -1,14 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { useAppDispatch } from "../../../redux/hooks";
 import type { RootState } from "../../../app/store";
 import { useState } from "react";
 import { logout } from "../../../redux/slices/authSlice";
 import Logo from "../../../assets/cuckoo.png";
+import { useSelector } from "react-redux";
 
 const MobileTopBar = () => {
-  const { access, user } = useAppSelector((state: RootState) => state.auth);
+  const { access } = useSelector((state: RootState) => state.auth);
 
+  const storedProfile = localStorage.getItem("profile");
+  const user = storedProfile ? JSON.parse(storedProfile) : null;
   const [profileOpen, setProfileOpen] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -65,7 +68,7 @@ const MobileTopBar = () => {
               <Link
                 to="/admin/dashboard"
                 className="
-                  hidden xs:flex
+                  flex
                   text-xs font-medium
                   bg-green-600 hover:bg-green-700
                   px-2.5 py-1.5
